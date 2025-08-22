@@ -1,0 +1,732 @@
+@custom-variant dark (&:is(.dark *));
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Font variables */
+    --font-silkscreen: var(--font-silkscreen);
+    --font-space-grotesk: var(--font-space-grotesk);
+    --font-inter: var(--font-inter);
+    --font-ibm-plex-mono: var(--font-ibm-plex-mono);
+    
+    /* Combined color variables - prioritizing your global.css values */
+    --background: #080220;
+    --foreground: #ffffff;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: #f9fafb;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: #1a1225;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: #9ca3af;
+    --accent: #8e2de2;
+    --accent-secondary: #f5a623;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: #3d2a75;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.75rem;
+
+    --color-bg1: #000000;
+    --color-bg2: #0a0a0a;
+    --color1: 0, 255, 140; /* Bright neon green */
+    --color2: 0, 200, 100; /* Medium neon green */
+    --color3: 0, 150, 70; /* Darker neon green */
+    --color4: 0, 100, 50; /* Deep green */
+    --color5: 0, 255, 120; /* Bright neon green variant */
+    --color-interactive: 0, 255, 140;
+    --circle-size: 100vh;
+    --blending: screen;
+    --bg-primary: #0f0a1a;
+    --bg-secondary: #1a1225;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --glow-effect: 0 0 5px rgba(142, 45, 226, 0.5),
+      0 0 10px rgba(142, 45, 226, 0.3);
+  }
+
+  /* Dark mode - combined values */
+  .dark {
+    --background: #000000;
+    --foreground: #ffffff;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+  }
+
+  /* Combined font faces */
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: local("JetBrains Mono"),
+      url("/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: local("JetBrains Mono Bold"),
+      url("/fonts/JetBrainsMono-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Combined base styles */
+  * {
+    @apply border-border selection:bg-white/10 selection:text-white;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-slate-900 font-sans text-foreground;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+body {
+  position: relative;
+}
+
+/* Makes content appear above the background */
+main {
+  position: relative;
+  z-index: 10;
+}
+.link-svgline a svg.link-svgline {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  height: 20px;
+  transition: stroke-dashoffset 0.3s ease-in-out;
+  transform: translateY(-90%);
+  fill: none;
+  stroke: #b1d474;
+  stroke-width: 5;
+  stroke-dasharray: 400px;
+  stroke-dashoffset: 400px;
+}
+
+.animated-cards::before {
+  @apply pointer-events-none absolute select-none rounded-3xl opacity-0 transition-opacity duration-300 hover:opacity-100;
+  background: radial-gradient(
+    1000px circle at var(--x) var(--y),
+    #c9ee80 0,
+    #eebbe2 10%,
+    #adc0ec 25%,
+    #c9ee80 35%,
+    rgba(255, 255, 255, 0) 50%,
+    transparent 80%
+  );
+  z-index: -1;
+
+  inset: -1px;
+}
+
+.link-svgline a:hover svg.link-svgline {
+  stroke-dashoffset: 0px;
+}
+
+@layer components {
+  /* Combined component styles */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px];
+  }
+
+  .sidebar-item {
+    @apply flex items-center border border-orange-400  gap-3 px-4 py-3 rounded-lg bg-white text-black hover:bg-gray-100 transition-all duration-200 font-medium shadow-md card-hover;
+  }
+  .sidebar-item.active {
+    @apply bg-purple-900/20 text-black font-semibold;
+  }
+
+  .glassmorphic,
+  .glass-morphism {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+
+  .neo-blur {
+    @apply backdrop-blur-2xl bg-black/40 border border-white/10;
+  }
+}
+
+@layer utilities {
+  /* Combined utility classes */
+
+  /* Dock Navigation Styles */
+  .dock-icon {
+    @apply relative overflow-hidden transition-all duration-300 ease-out;
+  }
+
+  .dock-icon::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300;
+  }
+
+  .dock-icon:hover::before {
+    @apply opacity-100;
+  }
+
+  .dock-icon-glow {
+    @apply relative;
+    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+  }
+
+  .dock-icon-glow:hover {
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5));
+  }
+
+  /* Enhanced glass morphism for dock */
+  .dock-glass {
+    @apply bg-black/20 backdrop-blur-2xl border border-white/20 shadow-2xl;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  }
+
+  /* Light Ray Animations */
+  .light-ray {
+    animation: lightRayPulse 4s ease-in-out infinite;
+  }
+
+  .light-ray-glow {
+    animation: lightRayGlow 6s ease-in-out infinite;
+  }
+
+  .light-ray-shimmer {
+    animation: lightRayShimmer 3s ease-in-out infinite;
+  }
+
+  /* Enhanced Light Ray Styles for Wide Angle Effect */
+  .light-ray-wide {
+    animation: lightRayWide 5s ease-in-out infinite;
+    background: linear-gradient(to bottom, 
+      rgba(14, 165, 233, 0.6) 0%, 
+      rgba(14, 165, 233, 0.4) 30%, 
+      rgba(14, 165, 233, 0.2) 60%, 
+      transparent 100%
+    );
+  }
+
+  .light-ray-beam {
+    animation: lightRayBeam 4s ease-in-out infinite;
+    filter: blur(1px);
+  }
+
+  .secure{
+    font-family: var(--font-ibm-plex-mono), monospace;
+  }
+
+  .logo-gradient-text {
+    background: linear-gradient(
+      135deg,
+      #3d2a75,
+      #8e2de2,
+      #f5a623,
+      #8e2de2,
+      #3d2a75
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+  }
+
+  .text-shadow-glow {
+    text-shadow: var(--glow-effect);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-purple {
+    @apply bg-gradient-to-br from-purple-300 via-purple-500 to-purple-700 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-orange {
+    @apply bg-gradient-to-br from-orange-300 via-orange-500 to-orange-700 bg-clip-text text-transparent;
+  }
+
+  .animate-card-float {
+    animation: card-float 4s ease-in-out infinite alternate;
+  }
+
+  .card-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .card-glow::before {
+       @apply absolute inset-0 opacity-0 transition-opacity duration-700;
+    background: radial-gradient(
+      circle at var(--x, 50%) var(--y, 50%),
+      rgba(255, 255, 255, 0.1),
+      transparent 60%
+    );
+  }
+
+  .card-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  .animated-border {
+    position: relative;
+  }
+
+  .animated-border::after {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    background-image: linear-gradient(
+      90deg,
+      rgba(155, 135, 245, 0.5),
+      rgba(249, 115, 22, 0.5)
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+
+  .animated-border:hover::after {
+    opacity: 1;
+  }
+
+  .blob {
+    @apply absolute rounded-full filter blur-3xl opacity-70;
+  }
+
+  .text-bold {
+    @apply font-bold;
+  }
+
+  .text-extrabold {
+    @apply font-extrabold;
+  }
+
+  /* Keyframes */
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes card-float {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Neon Gas Animations */
+  @keyframes neon-float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+      opacity: 0.3;
+    }
+    25% {
+      transform: translateY(-10px) rotate(2deg);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(-5px) rotate(-1deg);
+      opacity: 0.8;
+    }
+    75% {
+      transform: translateY(-15px) rotate(1deg);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes neon-pulse-slow {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes neon-drift {
+    0% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+      opacity: 0.4;
+    }
+    33% {
+      transform: translateX(20px) translateY(-10px) rotate(5deg);
+      opacity: 0.8;
+    }
+    66% {
+      transform: translateX(-15px) translateY(5px) rotate(-3deg);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes neon-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+    }
+    50% {
+      box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    }
+  }
+
+  /* Wave-like neon gas animations */
+  @keyframes neon-wave {
+    0%,
+    100% {
+      transform: translateY(0px) translateX(0px) scale(1);
+      opacity: 0.4;
+    }
+    25% {
+      transform: translateY(-15px) translateX(5px) scale(1.02);
+      opacity: 0.7;
+    }
+    50% {
+      transform: translateY(-8px) translateX(-3px) scale(0.98);
+      opacity: 0.8;
+    }
+    75% {
+      transform: translateY(-20px) translateX(8px) scale(1.05);
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes neon-wave-reverse {
+    0%,
+    100% {
+      transform: translateY(0px) translateX(0px) scale(1);
+      opacity: 0.5;
+    }
+    25% {
+      transform: translateY(10px) translateX(-5px) scale(0.95);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(18px) translateX(7px) scale(1.03);
+      opacity: 0.7;
+    }
+    75% {
+      transform: translateY(5px) translateX(-8px) scale(0.98);
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes neon-flow {
+    0% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+      opacity: 0.3;
+    }
+    33% {
+      transform: translateX(15px) translateY(-10px) rotate(2deg);
+      opacity: 0.7;
+    }
+    66% {
+      transform: translateX(-10px) translateY(8px) rotate(-1deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes lightRayPulse {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes lightRayGlow {
+    0%, 100% {
+      opacity: 0.2;
+      filter: blur(1px);
+    }
+    50% {
+      opacity: 0.6;
+      filter: blur(2px);
+    }
+  }
+
+  @keyframes lightRayShimmer {
+    0%, 100% {
+      opacity: 0.3;
+      transform: translateY(0px);
+    }
+    33% {
+      opacity: 0.7;
+      transform: translateY(-2px);
+    }
+    66% {
+      opacity: 0.5;
+      transform: translateY(1px);
+    }
+  }
+
+  @keyframes lightRayWide {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(1) translateY(0px);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.1) translateY(-3px);
+    }
+  }
+
+  @keyframes lightRayBeam {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scaleY(1) scaleX(1);
+      filter: blur(1px);
+    }
+    33% {
+      opacity: 0.8;
+      transform: scaleY(1.05) scaleX(1.2);
+      filter: blur(2px);
+    }
+    66% {
+      opacity: 0.6;
+      transform: scaleY(0.95) scaleX(0.9);
+      filter: blur(1.5px);
+    }
+  }
+
+  .typing-animation {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 3s steps(40, end);
+  }
+
+  .animate-neon-float {
+    animation: neon-float 8s ease-in-out infinite;
+  }
+
+  .animate-neon-pulse-slow {
+    animation: neon-pulse-slow 6s ease-in-out infinite;
+  }
+
+  .animate-neon-drift {
+    animation: neon-drift 12s ease-in-out infinite;
+  }
+
+  .animate-neon-glow {
+    animation: neon-glow 4s ease-in-out infinite;
+  }
+
+  .animate-neon-wave {
+    animation: neon-wave 10s ease-in-out infinite;
+  }
+
+  .animate-neon-wave-reverse {
+    animation: neon-wave-reverse 12s ease-in-out infinite;
+  }
+
+  .animate-neon-flow {
+    animation: neon-flow 8s ease-in-out infinite;
+  }
+
+  /* Gradient utilities for neon gas */
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+}
+
+@theme inline {
+  --animate-grid: grid 15s linear infinite;
+  @keyframes grid {
+  0% {
+    transform: translateY(-50%);
+    }
+  100% {
+    transform: translateY(0);
+    }
+  }
+  --animate-rainbow: rainbow var(--speed, 2s) infinite linear;
+  --color-color-5: var(--color-5);
+  --color-color-4: var(--color-4);
+  --color-color-3: var(--color-3);
+  --color-color-2: var(--color-2);
+  --color-color-1: var(--color-1)
+;
+  @keyframes rainbow {
+  0% {
+    background-position: 0%;
+    }
+  100% {
+    background-position: 200%;
+    }
+  }}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+/* styles/globals.css or app/globals.css */
+
+.glow-button {
+  --glow-color: rgb(217, 176, 255);
+  --glow-spread-color: rgba(191, 123, 255, 0.781);
+  --enhanced-glow-color: rgb(231, 206, 255);
+  --btn-color: rgb(100, 61, 136);
+  border: 0.25em solid var(--glow-color);
+  padding: 1em 3em;
+  color: var(--glow-color);
+  font-size: 15px;
+  font-weight: bold;
+  background-color: var(--btn-color);
+  border-radius: 1em;
+  outline: none;
+  box-shadow: 
+    0 0 1em 0.25em var(--glow-color),
+    0 0 4em 1em var(--glow-spread-color),
+    inset 0 0 0.75em 0.25em var(--glow-color);
+  text-shadow: 0 0 0.5em var(--glow-color);
+  position: relative;
+  transition: all 0.3s;
+}
+
+.glow-button::after {
+  pointer-events: none;
+  position: absolute;
+  top: 120%;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--glow-spread-color);
+  filter: blur(2em);
+  opacity: 0.7;
+  transform: perspective(1.5em) rotateX(35deg) scale(1, 0.6);
+}
+
+.glow-button:hover {
+  color: var(--btn-color);
+  background-color: var(--glow-color);
+  box-shadow: 
+    0 0 1em 0.25em var(--glow-color),
+    0 0 4em 2em var(--glow-spread-color),
+    inset 0 0 0.75em 0.25em var(--glow-color);
+}
+
+.glow-button:active {
+  box-shadow: 
+    0 0 0.6em 0.25em var(--glow-color),
+    0 0 2.5em 2em var(--glow-spread-color),
+    inset 0 0 0.5em 0.25em var(--glow-color);
+}
+
+/* Premium gradient animations for pricing title */
+@keyframes gradient-shift {
+  0%, 100% { 
+    background-position: 0% 50%; 
+  }
+  50% { 
+    background-position: 100% 50%; 
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+:root {
+  --color-1: oklch(66.2% 0.225 25.9);
+  --color-2: oklch(60.4% 0.26 302);
+  --color-3: oklch(69.6% 0.165 251);
+  --color-4: oklch(80.2% 0.134 225);
+  --color-5: oklch(90.7% 0.231 133);
+}
+
+.dark {
+  --color-1: oklch(66.2% 0.225 25.9);
+  --color-2: oklch(60.4% 0.26 302);
+  --color-3: oklch(69.6% 0.165 251);
+  --color-4: oklch(80.2% 0.134 225);
+  --color-5: oklch(90.7% 0.231 133);
+}
