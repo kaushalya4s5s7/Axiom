@@ -115,7 +115,7 @@ npm run dev
 📫 Contact
 Have questions or need support?
 
-📩 Email: zeraaihelp@gmail.com
+📩 Email: axiomaihelp@gmail.com
 🌐 Visit: [https://axiom-plgenesis.vercel.app](https://axiom-plgenesis.vercel.app)
 
 📢 Contributing
