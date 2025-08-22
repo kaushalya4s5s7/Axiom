@@ -43,7 +43,7 @@ const HomePage = () => {
     <div>
       {showSplash && (
         <SplashImage
-          src="/Gemini_Generated_Image_u9x2jru9x2jru9x2.png" // **IMPORTANT: Replace with the actual path to your PNG image**
+          src="/unnamed-4-removebg-preview.png" // **IMPORTANT: Replace with the actual path to your PNG image**
           alt="Your Website Logo"
           onAnimationComplete={handleSplashAnimationComplete}
         />

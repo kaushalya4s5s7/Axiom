@@ -57,7 +57,7 @@ const Hero = () => {
       <div className="absolute top-6 left-6 z-50">
         <a href="/">
           <Image
-            src="/Gemini_Generated_Image_u9x2jru9x2jru9x2.png"
+            src="/unnamed-4-removebg-preview.png"
             alt="Axiom Logo"
             width={60}
             height={20}
