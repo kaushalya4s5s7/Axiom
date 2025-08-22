@@ -2,6 +2,7 @@
 
 import { FC, PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CivicAuthProvider } from "@civic/auth-web3/react";
 import { Chain, http } from "viem";
 import { WagmiProvider, createConfig } from "wagmi";
 import {
@@ -64,9 +65,13 @@ const Provider: FC<ProvidersProps> = ({ children }) => {
     <ConfettiProvider>
       <QueryClientProvider client={queryClient}>
         <WagmiProvider config={wagmiConfig}>
-          
+          <CivicAuthProvider
+            clientId="7ed6d5cd-300f-415c-bcc0-69c399ec465d"
+            initialChain={sepolia} // ✅ You can set to arbitrumSepolia if needed
+         
+          >
             {children}
-          
+          </CivicAuthProvider>
         </WagmiProvider>
       </QueryClientProvider>
     </ConfettiProvider>
