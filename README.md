@@ -38,7 +38,6 @@ Smart contracts power DeFi, NFTs, DAOs — yet they remain vulnerable. From the 
 ---
 
 ## 🌐 Platform Workflow
-![image](https://github.com/user-attachments/assets/2a1abd28-e248-42cc-9539-123ba50f27c3)
 
 1. **Connect Wallet**
 2. **Generate Contracts** using AI prompts
@@ -48,12 +47,9 @@ Smart contracts power DeFi, NFTs, DAOs — yet they remain vulnerable. From the 
 6. **Auto-generate Documentation** for transparency
 
 Everything is stored and processed securely — no manual intervention required.
-[![image](https://github.com/kaushalya4s5s7/Axiom_civicAuth/blob/main/Untitled-2025-06-06-1233.excalidraw.png?raw=true)
 
 ---
 
-## FileCoin to Dapp integration Learning 
-![image](https://github.com/kaushalya4s5s7/Axiom_plgenesis/blob/main/public/Untitled-2025-06-06-1233.excalidraw-2.png)
 
 
 
@@ -114,8 +110,8 @@ npm run dev
 📫 Contact
 Have questions or need support?
 
-📩 Email: axiomaihelp@gmail.com
-🌐 Visit: [https://axiom-plgenesis.vercel.app](https://axiom-plgenesis.vercel.app)
+📩 Email: chaudharikaushal02@gmail.com
+🌐 Visit: [[https://axiom-plgenesis.vercel.app](https://axiom-one-olive.vercel.app)]
 
 📢 Contributing
 We welcome community collaboration!
