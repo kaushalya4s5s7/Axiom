@@ -28,7 +28,6 @@ Instantly create technical documentation for smart contracts.
 ---
 
 ## 🛡 Why Axiom?
-![image](https://github.com/user-attachments/assets/4beb1d40-b14d-4ee6-bcf4-e8e0181efb4f)
 
 Smart contracts power DeFi, NFTs, DAOs — yet they remain vulnerable. From the **DAO Hack ($50M)** to **Euler Finance ($197M)**, the threat is real. Axiom solves this by:
 
