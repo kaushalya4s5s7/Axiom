@@ -273,20 +273,20 @@ const WalletInfo = (): React.ReactElement | null => {
         )}
       </div>
 
-      {/* Solana Wallets Section */}
-      <div>
-        <h3 className="text-lg font-medium text-gray-800 mb-4">Solana Wallets</h3>
-        {uniqueSolanaAddresses.length > 0 ? (
-          uniqueSolanaAddresses.map((solAddress) => (
-            <SolanaWalletOption
-              key={solAddress}
-              address={solAddress}
-              
-            />
-          ))
-        ) : (
-          <p className="text-sm text-gray-500 italic">No Solana wallets available.</p>
-        )}
+{/* add google cloud sepolia eth faucet button with proper route to sepolia google cloud */}
+      <div className="mb-6">
+        <h3 className="text-lg font-medium text-gray-800 mb-4">Sepolia Faucet</h3>
+        <p className="text-sm text-gray-500 mb-2">
+          Get free Sepolia ETH for testing purposes.
+        </p>
+        <a
+          href="https://cloud.google.com/application/web3/faucet/ethereum/sepolia"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+        >
+          Get Sepolia ETH
+        </a>
       </div>
 
       {/* Display selected wallet info */}

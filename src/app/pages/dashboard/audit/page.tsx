@@ -968,8 +968,6 @@ const AuditPage = () => {
           {!isLocked && (
             <AuditResults
             
-              isSwitchingChain={false}
-              currentActiveChainId={chain?.id ?? 0}
             />
           )}
         </div>

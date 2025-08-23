@@ -178,14 +178,7 @@ const Header = () => {
        <div className="hidden md:flex items-center space-x-4">
           <div className="flex items-center gap-4">
             {/* Authentication Buttons */}
-            <div className="text-white hover:bg-white/10">
-            {user && (
-        <Link
-          href="/wallet"
-          className="px-6 py-2 rounded-full bg-purple-500 text-white font-bold flex items-center justify-center hover:bg-purple-600 transition-colors">
-          Wallet
-        </Link>
-      )}</div><div>
+            <div>
               <UserButton />
               </div>
             {/* {/* </div>
