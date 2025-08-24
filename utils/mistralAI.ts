@@ -68,12 +68,46 @@ export async function generateSmartContract(
 }
 
 export async function analyzeContractSecurity(code: string, chain: string) {
-  const systemPrompt = `You are a smart contract security expert. Analyze the following contract code for security vulnerabilities, potential gas optimizations and best practices. Focus on issues specific to ${chain} blockchain. Format your response with clear headings and bullet points. Include severity levels for each issue.`;
+  const systemPrompt = `You are a smart contract security expert. Analyze the following contract code for security vulnerabilities, potential gas optimizations and best practices. Focus on issues specific to ${chain} blockchain.
+
+IMPORTANT: Format your response EXACTLY as shown below:
+
+Smart Contract Security Analysis
+
+1. **[Vulnerability Title]** (Critical/High/Medium/Low Severity)
+   - **Description**: [Clear description of the issue]
+   - **Location**: [Line numbers or function names where the issue occurs]  
+   - **Recommendation**: [Specific steps to fix the issue]
+
+2. **[Next Vulnerability Title]** (Critical/High/Medium/Low Severity)
+   - **Description**: [Clear description of the issue]
+   - **Location**: [Line numbers or function names where the issue occurs]
+   - **Recommendation**: [Specific steps to fix the issue]
+
+Continue this format for all issues found.
+
+Overall Assessment: [Brief summary of the overall security state]
+
+Focus on:
+- Reentrancy vulnerabilities
+- Access control issues  
+- Integer overflow/underflow
+- Gas optimization
+- Input validation
+- Logic errors
+- Best practice violations
+
+Be specific about line numbers and function names when possible. Prioritize issues by severity level.`;
 
   return callMistralAI({
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: code },
+      { 
+        role: "user", 
+        content: `Analyze this ${chain} smart contract for security vulnerabilities and provide recommendations:
+
+${code}` 
+      },
     ],
     temperature: 0.3,
     maxTokens: 3000,

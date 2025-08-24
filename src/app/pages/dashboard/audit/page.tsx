@@ -374,12 +374,13 @@ const AUDIT_REGISTRY_ADDRESS = "0xE3873898A217d64B08dB9aE587AfbdDc24b84409";
 
 const parseIssuesFromAuditReport = (auditReport: string): AuditIssue[] => {
   const issues: AuditIssue[] = [];
-  const lines = auditReport.split("\n");
-
+  const lines = auditReport.split('\n').filter(line => line.trim());
+  
   console.log("Parsing audit report with", lines.length, "lines");
-  console.log("First 10 lines:", lines.slice(0, 10));
+  console.log("Full audit report:", auditReport);
 
   let currentIssue: Partial<AuditIssue> = {};
+  let issueCounter = 1;
 
   const generateUUID = () => {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -391,135 +392,126 @@ const parseIssuesFromAuditReport = (auditReport: string): AuditIssue[] => {
       return v.toString(16);
     });
   };
-
-  lines.forEach((line, index) => {
+  
+  for (const line of lines) {
     const trimmedLine = line.trim();
     
-    // Handle different heading formats for issues
-    if (trimmedLine.startsWith("####") || 
-        trimmedLine.startsWith("## ") || 
-        trimmedLine.startsWith("### ") ||
-        trimmedLine.match(/^\d+\.\s+/)) { // Numbered lists
-      
-      // Save previous issue if it exists
+    // Skip the main heading and overall assessment
+    if (trimmedLine === 'Smart Contract Security Analysis' || 
+        trimmedLine.startsWith('Overall Assessment:') ||
+        trimmedLine.includes('Overall Assessment:') ||
+        trimmedLine.startsWith('## ') ||
+        trimmedLine.startsWith('# ')) {
+      continue;
+    }
+    
+    // Check if line starts with a number and contains severity in parentheses
+    const numberMatch = trimmedLine.match(/^\d+\.\s*\*\*(.*?)\*\*\s*\((.*?)\)/);
+    if (numberMatch) {
+      // Save previous issue if exists
       if (currentIssue.id) {
         issues.push(currentIssue as AuditIssue);
       }
-
+      
+      // Start new issue
+      const title = numberMatch[1].trim();
+      const severity = numberMatch[2].replace(' Severity', '').toLowerCase().trim();
+      
       currentIssue = {
         id: generateUUID(),
-        title: trimmedLine.replace(/^(####|###|##|\d+\.)\s*/, "").trim(),
+        title,
+        severity,
+        description: '',
+        source: '',
+        line: null,
+        recommendation: ''
       };
+      
+      continue;
     }
-    // Handle different description patterns
-    else if (trimmedLine.startsWith("- **Description**:") ||
-             trimmedLine.startsWith("**Description:**") ||
-             trimmedLine.startsWith("Description:")) {
-      currentIssue.description = trimmedLine.replace(/^(- )?\*\*Description\*?\*?:?\s*/, "").trim();
+    
+    // Parse description
+    if (trimmedLine.startsWith('- **Description**:') && currentIssue.id) {
+      currentIssue.description = trimmedLine.replace('- **Description**:', '').trim();
+      continue;
     }
-    // Handle function/source patterns
-    else if (trimmedLine.startsWith("- **Affected Function**:") ||
-             trimmedLine.startsWith("- **Function**:") ||
-             trimmedLine.startsWith("**Function:**") ||
-             trimmedLine.startsWith("Function:") ||
-             trimmedLine.startsWith("**Location:**") ||
-             trimmedLine.startsWith("Location:")) {
-      currentIssue.source = trimmedLine.replace(/^(- )?\*\*(Affected Function|Function|Location)\*?\*?:?\s*/, "").trim();
-    }
-    // Handle mitigation/recommendation patterns
-    else if (trimmedLine.startsWith("- **Mitigation**:") ||
-             trimmedLine.startsWith("- **Recommendation**:") ||
-             trimmedLine.startsWith("**Mitigation:**") ||
-             trimmedLine.startsWith("**Recommendation:**") ||
-             trimmedLine.startsWith("Mitigation:") ||
-             trimmedLine.startsWith("Recommendation:")) {
-      currentIssue.recommendation = trimmedLine.replace(/^(- )?\*\*(Mitigation|Recommendation)\*?\*?:?\s*/, "").trim();
-    }
-    // Handle severity patterns
-    else if (trimmedLine.startsWith("- **Severity**:") ||
-             trimmedLine.startsWith("**Severity:**") ||
-             trimmedLine.startsWith("Severity:")) {
-      currentIssue.severity = trimmedLine.replace(/^(- )?\*\*Severity\*?\*?:?\s*/, "").trim().toLowerCase();
-    }
-    // Handle line number patterns
-    else if (trimmedLine.match(/line\s+(\d+)/i)) {
-      const lineMatch = trimmedLine.match(/line\s+(\d+)/i);
+    
+    // Parse location/source
+    if (trimmedLine.startsWith('- **Location**:') && currentIssue.id) {
+      const location = trimmedLine.replace('- **Location**:', '').trim();
+      currentIssue.source = location;
+      
+      // Extract line number if present
+      const lineMatch = location.match(/Line (\d+)/i);
       if (lineMatch) {
         currentIssue.line = parseInt(lineMatch[1]);
       }
+      continue;
     }
-    // If we have a current issue but no description yet, and this line has content, use it as description
-    else if (currentIssue.title && !currentIssue.description && trimmedLine.length > 10 && !trimmedLine.startsWith("-")) {
+    
+    // Parse recommendation
+    if (trimmedLine.startsWith('- **Recommendation**:') && currentIssue.id) {
+      currentIssue.recommendation = trimmedLine.replace('- **Recommendation**:', '').trim();
+      continue;
+    }
+    
+    // Alternative patterns for less structured responses
+    if (currentIssue.id && !currentIssue.description && trimmedLine.length > 20 && 
+        !trimmedLine.startsWith('- **') && !trimmedLine.startsWith('**') && 
+        !trimmedLine.startsWith('#')) {
       currentIssue.description = trimmedLine;
     }
-  });
-
-  // Add the last issue if it exists
+  }
+  
+  // Add the last issue
   if (currentIssue.id) {
     issues.push(currentIssue as AuditIssue);
   }
 
-  // If no issues were parsed, try to create generic issues from severity mentions
-  if (issues.length === 0) {
-    console.log("No issues parsed with structured format, trying fallback parsing...");
-    
-    const criticalMatches = auditReport.match(/critical[^.]*[.!]/gi) || [];
-    const highMatches = auditReport.match(/high[^.]*[.!]/gi) || [];
-    const mediumMatches = auditReport.match(/medium[^.]*[.!]/gi) || [];
-    const lowMatches = auditReport.match(/low[^.]*[.!]/gi) || [];
+  console.log("Parsed issues:", issues);
 
-    [...criticalMatches, ...highMatches, ...mediumMatches, ...lowMatches].forEach((match, index) => {
-      const severity = match.toLowerCase().includes('critical') ? 'critical' :
-                      match.toLowerCase().includes('high') ? 'high' :
-                      match.toLowerCase().includes('medium') ? 'medium' : 'low';
-      
-      issues.push({
-        id: generateUUID(),
-        title: `Security Issue ${index + 1}`,
-        description: match.trim(),
-        severity: severity,
-        source: "Audit Report Analysis",
-        line: null,
-        recommendation: "Review and address this security concern"
-      });
+  // If no structured issues found, try fallback parsing
+  if (issues.length === 0) {
+    console.log("No structured issues found, trying fallback parsing...");
+    
+    // Look for common vulnerability patterns in the text
+    const vulnerabilityPatterns = [
+      { pattern: /reentrancy/gi, severity: 'high', title: 'Reentrancy Vulnerability' },
+      { pattern: /access control|unauthorized/gi, severity: 'critical', title: 'Access Control Issue' },
+      { pattern: /overflow|underflow/gi, severity: 'medium', title: 'Integer Overflow/Underflow' },
+      { pattern: /timestamp|block\.timestamp/gi, severity: 'low', title: 'Timestamp Dependence' },
+      { pattern: /gas limit|gas griefing/gi, severity: 'medium', title: 'Gas Limit Issue' },
+      { pattern: /front.?running|front.?run/gi, severity: 'medium', title: 'Front-running Vulnerability' }
+    ];
+
+    vulnerabilityPatterns.forEach((vuln, index) => {
+      const matches = auditReport.match(vuln.pattern);
+      if (matches && matches.length > 0) {
+        issues.push({
+          id: generateUUID(),
+          title: vuln.title,
+          description: `Detected ${matches.length} potential ${vuln.title.toLowerCase()} issue(s) in the contract.`,
+          severity: vuln.severity,
+          source: "Automated Analysis",
+          line: null,
+          recommendation: `Review and address the ${vuln.title.toLowerCase()} concerns identified in the analysis.`
+        });
+      }
     });
   }
 
-  console.log("Parsed", issues.length, "issues:", issues);
-  
-  // For debugging: add mock issues if none found (remove in production)
-  if (issues.length === 0 && auditReport.length > 0) {
-    console.log("Adding mock issues for debugging...");
-    const mockIssues: AuditIssue[] = [
-      {
-        id: generateUUID(),
-        title: "Potential Reentrancy Vulnerability",
-        description: "The contract may be vulnerable to reentrancy attacks due to external calls before state changes.",
-        severity: "high",
-        source: "withdraw() function",
-        line: 45,
-        recommendation: "Use the checks-effects-interactions pattern and consider using OpenZeppelin's ReentrancyGuard."
-      },
-      {
-        id: generateUUID(),
-        title: "Missing Access Control",
-        description: "Critical functions lack proper access control mechanisms.",
-        severity: "critical", 
-        source: "Administrative functions",
-        line: null,
-        recommendation: "Implement role-based access control using OpenZeppelin's AccessControl."
-      },
-      {
-        id: generateUUID(),
-        title: "Integer Overflow Risk",
-        description: "Arithmetic operations may overflow without proper checks.",
-        severity: "medium",
-        source: "calculation functions",
-        line: 78,
-        recommendation: "Use SafeMath library or Solidity 0.8+ built-in overflow protection."
-      }
-    ];
-    issues.push(...mockIssues);
+  // If still no issues and we have audit content, create one generic issue
+  if (issues.length === 0 && auditReport.length > 50) {
+    console.log("Creating generic issue from audit content");
+    issues.push({
+      id: generateUUID(),
+      title: "Security Analysis Results",
+      description: auditReport.substring(0, 200) + (auditReport.length > 200 ? "..." : ""),
+      severity: "medium",
+      source: "Smart Contract Analysis",
+      line: null,
+      recommendation: "Review the complete audit report for detailed security recommendations."
+    });
   }
   
   return issues;

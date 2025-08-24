@@ -11,7 +11,7 @@ const SeverityBadge = ({ severity }: { severity: string }) => {
       case "critical":
         return "bg-red-500/20 text-red-400 border-red-500";
       case "high":
-        return "bg-orange/20 text-orange border-orange";
+        return "bg-orange-500/20 text-orange-400 border-orange-500";
       case "medium":
         return "bg-yellow-500/20 text-yellow-400 border-yellow-500";
       case "low":
