@@ -380,7 +380,6 @@ const parseIssuesFromAuditReport = (auditReport: string): AuditIssue[] => {
   console.log("Full audit report:", auditReport);
 
   let currentIssue: Partial<AuditIssue> = {};
-  let issueCounter = 1;
 
   const generateUUID = () => {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
